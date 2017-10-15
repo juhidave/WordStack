@@ -12,9 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.google.engedu.wordstack;
-
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
@@ -38,9 +36,7 @@ import java.util.Random;
 import java.util.Stack;
 
 import static android.R.attr.x;
-
 public class MainActivity extends AppCompatActivity {
-
     private static final int WORD_LENGTH = 5;
     public static final int LIGHT_BLUE = Color.rgb(176, 200, 255);
     public static final int LIGHT_GREEN = Color.rgb(200, 255, 200);
@@ -49,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     private StackedLayout stackedLayout;
     private Stack<LetterTile> placedTiles;
     private String word1, word2, playerWord1, playerWord2;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,12 +53,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             InputStream inputStream = assetManager.open("words.txt");
             BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
-            String line = null;
+            String line;
             while((line = in.readLine()) != null) {
                 String word = line.trim();
                 if (word.length() == WORD_LENGTH)
                     words.add(word);
-                /**my code above*/
             }
         } catch (IOException e) {
             Toast toast = Toast.makeText(this, "Could not load dictionary", Toast.LENGTH_LONG);
@@ -79,18 +73,13 @@ public class MainActivity extends AppCompatActivity {
         View word2LinearLayout = findViewById(R.id.word2);
         //word2LinearLayout.setOnTouchListener(new TouchListener());
         word2LinearLayout.setOnDragListener(new DragListener());
-
         placedTiles = new Stack<>();
         playerWord1 = "";
         playerWord2 = "";
     }
-
     private class TouchListener implements View.OnTouchListener {
-
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-
-
             if (event.getAction() == MotionEvent.ACTION_DOWN && !stackedLayout.empty()) {
                 LetterTile tile = (LetterTile) stackedLayout.peek();
                 tile.moveToViewGroup((ViewGroup) v);
@@ -98,17 +87,13 @@ public class MainActivity extends AppCompatActivity {
                     TextView messageBox = (TextView) findViewById(R.id.message_box);
                     messageBox.setText(word1 + " " + word2);
                 }
-
                 placedTiles.push(tile);
-
                 return true;
             }
             return false;
         }
     }
-
     private class DragListener implements View.OnDragListener {
-
         public boolean onDrag(View v, DragEvent event) {
             int action = event.getAction();
             switch (action) {
@@ -129,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
                     v.invalidate();
                     return true;
                 case DragEvent.ACTION_DROP:
-                    // Dropped, reassign Tile to the target Layout
                     LetterTile tile = (LetterTile) event.getLocalState();
                     if(v.getId() == R.id.word1)
                         playerWord1 += tile.moveToViewGroup((ViewGroup) v);
@@ -144,12 +128,9 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
-
     protected boolean onStartGame(View view) {
-
         ViewGroup word1LinearLayout = (ViewGroup)findViewById(R.id.word1);
         ViewGroup word2LinearLayout = (ViewGroup)findViewById(R.id.word2);
-
         word1LinearLayout.removeAllViews();
         word2LinearLayout.removeAllViews();
         try {
@@ -164,13 +145,8 @@ public class MainActivity extends AppCompatActivity {
         do {
             index2 = random.nextInt(words.size());
         }while(index2 == index1);
-
         word1 = words.get(index1);
         word2 = words.get(index2);
-
-//        word1 = "dates";
-//        word2 = "loved";
-
         String word3 = "";
         int word1Count = 0;
         int word2Count = 0;
@@ -183,22 +159,14 @@ public class MainActivity extends AppCompatActivity {
                 word3 += word2.charAt(word2Count);
                 word2Count++;
             }
-
         }
-
-        //messageBox.setText(word3);
-
         for(int i = word3.length()-1; i >= 0; --i){
             stackedLayout.push(new LetterTile(this, word3.charAt(i)));
         }
-
         return true;
     }
-
     protected boolean onUndo(View view) {
-
         if(!placedTiles.isEmpty()) {
-
             if (((View)placedTiles.peek().getParent()).getId() == R.id.word1){
                 playerWord1 = new StringBuilder(playerWord1).deleteCharAt(playerWord1.length()-1).toString();
                 placedTiles.pop().moveToViewGroup(stackedLayout);
@@ -208,12 +176,9 @@ public class MainActivity extends AppCompatActivity {
                 placedTiles.pop().moveToViewGroup(stackedLayout);
             }
         }
-
         return true;
     }
-
     protected void checkWin() {
-
         TextView messageBox = (TextView) findViewById(R.id.message_box);
         if(word1.equals(playerWord1) && word2.equals(playerWord2))
             messageBox.setText("You win! " + word1 + " " + word2);
